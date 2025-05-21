@@ -120,6 +120,7 @@ templates.env.filters['anchorize'] = _anchorize
 templates.env.globals['pypi_browser_version'] = importlib.metadata.version(
     'pypi-browser-webapp',
 )
+templates.env.globals['pypi_url'] = pypi_url
 
 
 async def home(request: Request) -> Response:
