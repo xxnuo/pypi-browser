@@ -1,6 +1,15 @@
 html {
     /* Disable smooth scrolling set by Bootstrap */
     scroll-behavior: auto !important;
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+}
+
+main {
+    flex: 1 0 auto;
 }
 
 .breadcrumb {
@@ -39,4 +48,10 @@ html {
     position: absolute;
     right: 100%;
     display: inline;
+}
+
+/* 隐藏超出限制的版本和文件 */
+.version-card.hidden,
+.file-entry.hidden {
+    display: none;
 }

@@ -5,6 +5,24 @@
 
 {% block title %}{{package}} | PyPI Browser{% endblock %}
 
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const showAllVersionsBtn = document.getElementById('show-all-versions');
+        const hiddenVersions = document.querySelectorAll('.version-card.hidden');
+        
+        if (showAllVersionsBtn && hiddenVersions.length > 0) {
+            showAllVersionsBtn.addEventListener('click', function() {
+                hiddenVersions.forEach(card => {
+                    card.classList.remove('hidden');
+                });
+                this.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock %}
+
 {% block content %}
     <h1 class="font-monospace">{{package}}</h1>
 
@@ -20,7 +38,7 @@
         Select a file below to explore it.
     </p>
     {% for version, files in version_to_files %}
-        <div class="card bg-light mb-3">
+        <div class="card bg-light mb-3 version-card {% if loop.index > 10 %}hidden{% endif %}">
             <div class="card-header">
                 <h5 class="mb-0">
                     {% if version is not none %}
@@ -40,6 +58,12 @@
             </div>
         </div>
     {% endfor %}
+    
+    {% if version_to_files|length > 10 %}
+        <div class="text-center mb-4">
+            <button id="show-all-versions" class="btn btn-outline-primary">Show More</button>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {# vim: ft=jinja

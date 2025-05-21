@@ -5,6 +5,24 @@
 
 {% block title %}{{filename}} | {{package}} | PyPI Browser{% endblock %}
 
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const showAllFilesBtn = document.getElementById('show-all-files');
+        const hiddenFiles = document.querySelectorAll('.file-entry.hidden');
+        
+        if (showAllFilesBtn && hiddenFiles.length > 0) {
+            showAllFilesBtn.addEventListener('click', function() {
+                hiddenFiles.forEach(file => {
+                    file.classList.remove('hidden');
+                });
+                this.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock %}
+
 {% block content %}
     <h1 class="font-monospace">{{filename}}</h1>
 
@@ -56,9 +74,10 @@
     <p class="small">Click a file name below to view its contents.</p>
     <div class="card bg-light mb-3">
         <div class="list-group list-group-flush">
-            {% for entry in entries|sort(attribute="path") %}
+            {% set sorted_entries = entries|sort(attribute="path") %}
+            {% for entry in sorted_entries %}
                 <a
-                    class="list-group-item list-group-item-action small"
+                    class="list-group-item list-group-item-action small file-entry {% if loop.index > 30 %}hidden{% endif %}"
                     href="{{url_for('package_file_archive_path', package=package, filename=filename, archive_path=entry.path)}}"
                 >
                     <span class="font-monospace">
@@ -69,6 +88,12 @@
             {% endfor %}
         </div>
     </div>
+    
+    {% if entries|length > 30 %}
+        <div class="text-center mb-4">
+            <button id="show-all-files" class="btn btn-outline-primary">Show More</button>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {# vim: ft=jinja
