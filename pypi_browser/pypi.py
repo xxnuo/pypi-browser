@@ -41,7 +41,8 @@ class SimpleRepository(PythonRepository):
     pypi_url: str
 
     async def files_for_package(self, package_name: str) -> dict[str, str]:
-        async with httpx.AsyncClient() as client:
+        timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=10.0)
+        async with httpx.AsyncClient(timeout=timeout) as client:
             resp = await client.get(
                 f'{self.pypi_url}/{package_name}',
                 follow_redirects=True,
@@ -79,7 +80,8 @@ class LegacyJsonRepository(PythonRepository):
     pypi_url: str
 
     async def files_for_package(self, package_name: str) -> dict[str, str]:
-        async with httpx.AsyncClient() as client:
+        timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=10.0)
+        async with httpx.AsyncClient(timeout=timeout) as client:
             resp = await client.get(
                 f'{self.pypi_url}/pypi/{package_name}/json',
                 follow_redirects=True,
@@ -163,7 +165,8 @@ async def downloaded_file_path(config: PyPIConfig, package: str, filename: str) 
 
     await aiofiles.os.makedirs(os.path.dirname(stored_path), exist_ok=True)
 
-    async with httpx.AsyncClient() as client:
+    timeout = httpx.Timeout(connect=10.0, read=60.0, write=30.0, pool=10.0)
+    async with httpx.AsyncClient(timeout=timeout) as client:
         async with _atomic_file(stored_path) as f:
             async with client.stream('GET', url) as resp:
                 resp.raise_for_status()
